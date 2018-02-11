@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=FarmerMap
+comment1.params=xpos\ ypos\ n
+comment1.target=FarmerMap(int,\ int,\ java.lang.String)
+comment2.params=
+comment2.target=java.lang.String\ getName()
+comment3.params=
+comment3.target=int\ getX()
+comment4.params=xpos
+comment4.target=void\ setX(int)
+comment5.params=
+comment5.target=int\ getY()
+comment6.params=ypos
+comment6.target=void\ setY(int)
+comment7.params=map
+comment7.target=void\ useFMap(Map)
+comment8.params=
+comment8.target=java.lang.String\ toString()
+numComments=9

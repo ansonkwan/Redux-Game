@@ -1,0 +1,21 @@
+#BlueJ class context
+comment0.target=Driver
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+comment2.params=dir
+comment2.target=boolean\ checkDir(java.lang.String)
+comment3.params=action
+comment3.target=boolean\ checkAction(java.lang.String)
+comment4.params=action
+comment4.target=boolean\ checkShop(java.lang.String)
+comment5.params=action
+comment5.target=boolean\ checkSLong(int)
+comment6.params=action
+comment6.target=boolean\ checkSShort(int)
+comment7.params=map
+comment7.target=boolean\ emptyMap(java.lang.Object[][])
+comment8.params=map\ B
+comment8.target=boolean\ thereBoss(java.lang.Object[][],\ Boss)
+comment9.params=
+comment9.target=boolean\ MonsterProb()
+numComments=10
