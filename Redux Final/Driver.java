@@ -8,6 +8,7 @@ public class Driver{
         String action;
         String menui;
         int runCount = 0;
+        int missCount = 0;
         boolean checkMap;
         boolean checkDir;
         boolean checkAction;
@@ -15,6 +16,7 @@ public class Driver{
         boolean checkSL;
         boolean checkSS;
         boolean run;
+        boolean miss;
         boolean monster;
         Map map = new Map();
 
@@ -32,12 +34,12 @@ public class Driver{
 
             do{
 
-                System.out.print("Enter a direction (w,a,s,d): ");
+                System.out.print("Enter an action (w,a,s,d,p): ");
                 dir = reader.next();
                 checkDir = checkDir(dir);
 
                 while(checkDir == false){
-                    System.out.print("Re-enter a direction (w,a,s,d): ");
+                    System.out.print("Re-enter an action (w,a,s,d,p): ");
                     dir = reader.next();
                     checkDir = checkDir(dir);
                 }
@@ -46,9 +48,57 @@ public class Driver{
                     System.out.println("Can not go off the map! Please try again.");
                 }
             }while(map.checkPossibleHeroPos(dir) == false);
+            
+            if(dir.equalsIgnoreCase("p")){
+                System.out.print("1. Small Potion: " + map.getInv().getAmountSmallPotion()+ "\n\tRestore 50 HP\n" + 
+                    "2. Big Potion: "+ map.getInv().getAmountBigPotion() +"\n\tRestore to full health\n3. Phoenix: "+map.getInv().getAmountBigPotion()+"\n\tRestore to full health and immediate revive\n\n4. Back");
+                int potioni = reader.nextInt();
+                checkSL = checkSLong(potioni);
+
+                while(checkSL == false){
+                    System.out.print("Please enter a valid number");
+                    potioni = reader.nextInt();
+                    checkSL = checkSLong(potioni);
+                }
+
+                if(potioni == 1){
+                    if(map.getInv().getAmountSmallPotion() <= 0){
+                        System.out.println("Do not have any Small Potions to use. Please buy at the Shop.");
+                    }else{
+                        map.getInv().useAmountSmallPotion();
+                        int HP = map.getHero().getHP() + 50;
+                        if(HP > 100){
+                            map.getHero().setHP(100);
+                        }
+                        else
+                            map.getHero().setHP(HP);
+
+                        System.out.println("Hero's health is " + map.getHero().getHP() + "/100 !");
+                    }
+                }
+                else if(potioni == 2){
+                    if(map.getInv().getAmountBigPotion() <= 0){
+                        System.out.println("Do not have any Big Potions to use. Please buy at the Shop.");
+                    }else{
+                        map.getInv().useAmountBigPotion();
+                        map.getHero().setHP(100);
+                        System.out.println("Hero used a Big Potion! Hero's health is " + map.getHero().getHP() + "/100 !");
+                    }
+                }
+                else if(potioni == 3){
+                    if(map.getInv().getAmountPhoenix() <= 0){
+                        System.out.println("Do not have any Phoenix to use. Please buy at the Shop.");
+                    }else{
+                        map.getInv().useAmountPhoenix();
+                        map.getHero().setHP(100);
+                        System.out.println("Hero used a Phoenix! Hero's health is " + map.getHero().getHP() + "/100 !");
+                    }
+                }else if(potioni == 4)
+                    continue;
+            }
 
             int prob = (int) (Math.random()*101);
-            if(prob <= -1){
+            if(prob <= 10){
                 System.out.println("\nHero encounters a monster! The monster engages!");
                 Monster m = new Monster(map.getHero().getWeapon()); 
                 final int mHP = m.getHealth();
@@ -62,17 +112,17 @@ public class Driver{
                         checkAction = checkAction(action);
                     }
 
-                    if(runCount > 0){
+                    if(runCount > 0 || missCount > 0){
                         m.setDir("S");
                     }
                     run = map.run(m.getSpeed(),m.getDir());
-
+                    miss = map.miss(m.getSpeed(),m.getDir());
                     if(action.equalsIgnoreCase("1")){
                         if(run == false){
                             int mATK = map.getArmor().useArmor(m,map.getHero().getArmor(),map.getHero().getWeapon());
                             int heroHP = map.getHero().getHP() - mATK;
                             map.getHero().setHP(heroHP);
-                            
+
                             if(map.getHero().getHP() <= 0){
                                 break;
                             }else{
@@ -91,14 +141,12 @@ public class Driver{
                             }
                         }
                     }
-                    else if(action.equalsIgnoreCase("2")){
+                    else if(action.equalsIgnoreCase("2") && miss == false){
                         if(map.getHero().hasSandels() == false){
                             int mATK = map.getArmor().useArmor(m,map.getHero().getArmor(),map.getHero().getWeapon());
                             int heroATK = map.getWeapon().useWeapon(map.getHero().getWeapon());
                             int monsterHPS = m.getHealth()- heroATK;
                             m.setHealth(monsterHPS);
-                            int heroHPS = map.getHero().getHP() - mATK;
-                            map.getHero().setHP(heroHPS);
 
                             if(m.getHealth() <= 0){
                                 System.out.println("Hero has succesdfully killed the monster! Hero's health is " + map.getHero().getHP() + "/100 !");
@@ -107,12 +155,13 @@ public class Driver{
                                 break;
                             }else
                                 System.out.println("Hero successfully atacked the monster! Monster health is now " + monsterHPS +  "/"  + mHP +" !");
-
+                            int heroHPS = map.getHero().getHP() - mATK;
+                            map.getHero().setHP(heroHPS);
                             if(map.getHero().getHP() <= 0){
                                 break;
                             }else
                                 System.out.println("Monster successfully atacked the hero! Hero health is now " + heroHPS + "/100 !");
-
+                            missCount++;
                         }
                         else if(map.getHero().hasSandels() == true){
                             int mATK = map.getArmor().useArmor(m,map.getHero().getArmor(),map.getHero().getWeapon());
@@ -121,8 +170,6 @@ public class Driver{
                             int heroATK2 = map.getWeapon().useWeapon(map.getHero().getWeapon());
                             int monsterHPS2 = monsterHPS1 - heroATK2;
                             m.setHealth(monsterHPS2);
-                            int heroHPS = map.getHero().getHP() - mATK;
-                            map.getHero().setHP(heroHPS);
 
                             if(m.getHealth() <= 0){
                                 System.out.println("Hero has succesdfully killed the monster! Hero's health is " + map.getHero().getHP() + "/100 !");
@@ -133,13 +180,26 @@ public class Driver{
                                 System.out.println("Hero successfully atacked the monster! Monster health is now " + monsterHPS1 +  "/"  + mHP +" !");
                                 System.out.println("Hero successfully atacked the monster again! Monster health is now " + monsterHPS1 +  "/"  + mHP +" !");
                             }
-
+                            int heroHPS = map.getHero().getHP() - mATK;
+                            map.getHero().setHP(heroHPS);
                             if(map.getHero().getHP() <= 0){
                                 break;
                             }else
                                 System.out.println("Monster successfully atacked the hero! Hero health is now " + heroHPS + "/100 !");
+                            missCount++;
                         }
+                    }
+                    else if(action.equalsIgnoreCase("2") && miss == true){
+                        int mATK = map.getArmor().useArmor(m,map.getHero().getArmor(),map.getHero().getWeapon());
+                        int heroHP = map.getHero().getHP() - mATK;
+                        map.getHero().setHP(heroHP);
 
+                        if(map.getHero().getHP() <= 0){
+                            break;
+                        }else{
+                            System.out.println("Hero's attack missed!");
+                            System.out.println("Monster successfully atacked the hero! Hero health is now " + heroHP + "/100 !");
+                        }
                     }
                     else if(action.equalsIgnoreCase("3")){
                         if(map.getInv().getAmountBomb() <= 0){
@@ -331,7 +391,7 @@ public class Driver{
                         menui = reader.next();
                         int gold = map.getHero().getGold();
                         checkS = checkShop(menui);
-                        
+
                         while(checkS == false){
                             System.out.print("Please enter a valid number");
                             menui = reader.next();
@@ -339,16 +399,16 @@ public class Driver{
                         }
                         if(menui.equals("1")){
                             System.out.print("Which potion would you like to buy?\n1. Small Potion\t\t10 Gold\n\tRestore 50 HP\n" + 
-                            "2. Big Potion\t\t25 Gold\n\tRestore to full health\n3. Phoenix\t\t55 Gold\n\tRestore to full health and immediate revive\n\n4. Back");
+                                "2. Big Potion\t\t25 Gold\n\tRestore to full health\n3. Phoenix\t\t55 Gold\n\tRestore to full health and immediate revive\n\n4. Back");
                             int potioni = reader.nextInt();
                             checkSL = checkSLong(potioni);
-                        
+
                             while(checkSL == false){
                                 System.out.print("Please enter a valid number");
                                 potioni = reader.nextInt();
                                 checkSL = checkSLong(potioni);
                             }
-                            
+
                             if(potioni == 1){
                                 if(map.getInv().addInventory(potioni) == true && map.getHero().getGold() >= 10){
                                     map.getHero().setGold(gold - 10);
@@ -378,13 +438,13 @@ public class Driver{
                             System.out.print("1. Bomb\t\t20 Gold\n\tKills low level monsters instantly\n\n2. Back");
                             int bombi = reader.nextInt();
                             checkSS = checkSShort(bombi);
-                        
+
                             while(checkSS == false){
                                 System.out.print("Please enter a valid number");
                                 bombi = reader.nextInt();
                                 checkSS = checkSShort(bombi);
                             }
-                            
+
                             if(bombi == 1){
                                 if(map.getInv().addInventory(4) == true && map.getHero().getGold() >= 20){
                                     map.getHero().setGold(gold - 20);
@@ -396,10 +456,10 @@ public class Driver{
                                 continue;
                         }else if(menui.equals("3")){
                             System.out.print("Which Weapon would you like to buy?\n1. Short Sword\t\t45 Gold\n\tDamage Range: 30-50\n2. Long Sword\t\t80 Gold\n\tDamage Range: 50-70" +
-                            "\n3. Axe\t\t       135 Gold\n\tDamage Range: 80-110\n\n4. Back");
+                                "\n3. Axe\t\t       135 Gold\n\tDamage Range: 80-110\n\n4. Back");
                             int weaponi = reader.nextInt();
                             checkSL = checkSLong(weaponi);
-                        
+
                             while(checkSL == false){
                                 System.out.print("Please enter a valid number");
                                 weaponi = reader.nextInt();
@@ -433,10 +493,10 @@ public class Driver{
                                 continue;
                         }else if(menui.equals("4")){
                             System.out.print("Which Armor would you like to buy?\n1. Leather\t\t30 Gold\n\t15% Damage Reduction\n2. Chain\t\t60 Gold\n\t25% Damage Reduction" + 
-                            "\n3. Dragon\t\t110 Gold\n\t45% Damage Reduction\n\n4. Back");
+                                "\n3. Dragon\t\t110 Gold\n\t45% Damage Reduction\n\n4. Back");
                             int armori = reader.nextInt();
                             checkSL = checkSLong(armori);
-                        
+
                             while(checkSL == false){
                                 System.out.print("Please enter a valid number");
                                 armori = reader.nextInt();
@@ -472,7 +532,7 @@ public class Driver{
                             System.out.print("1. Satchel\t\t20 Gold\n\tAdds 7 slots to Inventory\n\n2. Back");
                             int satcheli = reader.nextInt();
                             checkSS = checkSShort(satcheli);
-                        
+
                             while(checkSS == false){
                                 System.out.print("Please enter a valid number");
                                 satcheli = reader.nextInt();
@@ -492,7 +552,7 @@ public class Driver{
                             System.out.print("1. Sandels\t\t30 Gold\n\tDoubles Attack Speed\n\n2. Back");
                             int sandeli = reader.nextInt();
                             checkSS = checkSShort(sandeli);
-                        
+
                             while(checkSS == false){
                                 System.out.print("Please enter a valid number");
                                 sandeli = reader.nextInt();
@@ -557,8 +617,6 @@ public class Driver{
                                 int heroATK = map.getWeapon().useWeapon(map.getHero().getWeapon());
                                 int bossHPS = b.getHealth()- heroATK;
                                 b.setHealth(bossHPS);
-                                int heroHPS = map.getHero().getHP() - bATK;
-                                map.getHero().setHP(heroHPS);
 
                                 if(b.getHealth() <= 0){
                                     System.out.println("Hero has succesdfully killed the Boss! Hero's health is " + map.getHero().getHP() + "/100 !");
@@ -567,7 +625,8 @@ public class Driver{
                                     break;
                                 }else
                                     System.out.println("Hero successfully atacked the Boss! Boss health is now " + bossHPS +  "/"  + mHP +" !");
-
+                                int heroHPS = map.getHero().getHP() - bATK;
+                                map.getHero().setHP(heroHPS);
                                 if(map.getHero().getHP() <= 0){
                                     break;
                                 }else
@@ -581,8 +640,6 @@ public class Driver{
                                 int heroATK2 = map.getWeapon().useWeapon(map.getHero().getWeapon());
                                 int bossHPS2 = bossHPS1 - heroATK2;
                                 b.setHealth(bossHPS2);
-                                int heroHPS = map.getHero().getHP() - bATK;
-                                map.getHero().setHP(heroHPS);
 
                                 if(b.getHealth() <= 0){
                                     System.out.println("Hero has succesdfully killed the Boss! Hero's health is " + map.getHero().getHP() + "/100 !");
@@ -593,7 +650,8 @@ public class Driver{
                                     System.out.println("Hero successfully atacked the Boss! Boss health is now " + bossHPS1 +  "/"  + mHP +" !");
                                     System.out.println("Hero successfully atacked the Boss again! Boss health is now " + bossHPS1 +  "/"  + mHP +" !");
                                 }
-
+                                int heroHPS = map.getHero().getHP() - bATK;
+                                map.getHero().setHP(heroHPS);
                                 if(map.getHero().getHP() <= 0){
                                     break;
                                 }else
@@ -728,8 +786,11 @@ public class Driver{
                 System.out.println("Hero found " + map.whichBag(dir).getGold() + " Gold!");
                 map.move(dir);
             }
-            else
+            else if(!dir.equalsIgnoreCase("p")){
                 map.move(dir);
+            }
+            else
+                continue;
 
             checkMap =  emptyMap(map.getMap());
 
@@ -747,7 +808,7 @@ public class Driver{
     }
 
     public static boolean checkDir(String dir){
-        String[] possibleDir = {"w","a","s","d"};
+        String[] possibleDir = {"w","a","s","d","p"};
 
         for(String d : possibleDir){
             if(d.equalsIgnoreCase(dir)){
@@ -769,8 +830,7 @@ public class Driver{
 
         return false;
     }
-    
-    
+
     public static boolean checkShop(String action){
         String[] possibleAction = {"1","2","3","4", "5", "6","7"};
 
@@ -794,7 +854,7 @@ public class Driver{
 
         return false;
     }
-    
+
     public static boolean checkSShort(int action){
         int[] possibleAction = {1,2};
 
@@ -806,13 +866,13 @@ public class Driver{
 
         return false;
     }
-    
+
     public static boolean emptyMap(Object map[][]){
         boolean check = true;
 
         for(int i = 0; i < map.length; i++){
             for(int j = 0; j < map[i].length; j++){
-                if(map[i][j] instanceof String || map[i][j] instanceof Hero || map[i][j] instanceof Farmer){
+                if(map[i][j] instanceof String || map[i][j] instanceof Hero || map[i][j] instanceof Farmer || map[i][j] instanceof GoldBag){
                     check = check && true;
                 }else
                     check = check && false;
