@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=Armor
+comment1.params=n
+comment1.target=Armor(java.lang.String)
+comment2.params=n
+comment2.target=void\ setName(java.lang.String)
+comment3.params=m\ name\ weapon
+comment3.target=int\ useArmor(Monster,\ java.lang.String,\ java.lang.String)
+comment4.params=b\ name\ weapon
+comment4.target=int\ useArmorBoss(Boss,\ java.lang.String,\ java.lang.String)
+comment5.params=
+comment5.target=java.lang.String\ toString()
+numComments=6
