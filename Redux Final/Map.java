@@ -455,22 +455,24 @@ public class Map{
     }
 
     public boolean checkPossibleHeroPos(String direction){
-        if(direction.equals("s")){
+        if(direction.equalsIgnoreCase("s")){
             if(((hero.getY() + 1) < 15 && hero.getY() >= 0) && (hero.getX() < 15 && hero.getX() >= 0)){
                 return true;
             }
-        }else if(direction.equals("w")){
+        }else if(direction.equalsIgnoreCase("w")){
             if((hero.getY() < 15 && (hero.getY() - 1) >= 0) && (hero.getX() < 15 && hero.getX() >= 0)){
                 return true;
             }
-        }else if(direction.equals("d")){
+        }else if(direction.equalsIgnoreCase("d")){
             if((hero.getY() < 15 && hero.getY() >= 0) && ((hero.getX() + 1) < 15 && hero.getX() >= 0)){
                 return true;
             }
-        }else if(direction.equals("a")){
+        }else if(direction.equalsIgnoreCase("a")){
             if((hero.getY() < 15 && hero.getY() >= 0) && (hero.getX() < 15 && (hero.getX() - 1) >= 0)){
                 return true;
             }
+        }else if(direction.equalsIgnoreCase("p")){
+            return true;
         }
 
         return false;  
@@ -575,6 +577,85 @@ public class Map{
         return false;
     }
 
+    public boolean miss(int speed, String d){
+        int probability = (int)(Math.random()*101);
+        if(speed == 0 && d.equals("S")){
+            if(probability <= 5){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 1 && d.equals("S")){
+            if(probability <= 7){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 2 && d.equals("S")){
+            if(probability <= 10){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 3 && d.equals("S")){
+            if(probability <= 12){
+                return true;
+            }else
+                return false;
+        }
+
+        if(speed == 0 && d.equals("N")){
+            if(probability < 0){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 1 && d.equals("N")){
+            if(probability <= 5){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 2 && d.equals("N")){
+            if(probability <= 7){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 3 && d.equals("N")){
+            if(probability <= 8){
+                return true;
+            }else
+                return false;
+        }
+
+        if(speed == 0 && (d.equals("E") || d.equals("W"))){
+            if(probability <= 3){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 1 && (d.equals("E") || d.equals("W")) ){
+            if(probability <= 6){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 2 && (d.equals("E") || d.equals("W"))){
+            if(probability <= 8){
+                return true;
+            }else
+                return false;
+        }
+        else if(speed == 3 && (d.equals("E") || d.equals("W"))){
+            if(probability <= 10){
+                return true;
+            }else
+                return false;
+        }
+        return false;
+    }
+    
     public boolean square(int frow, int fcolum){
         int xdiff = Math.abs(fcolum - hero.getX());
         int ydiff = Math.abs(frow - hero.getY());
