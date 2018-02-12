@@ -1,0 +1,9 @@
+#BlueJ class context
+comment0.target=Potion
+comment1.params=n
+comment1.target=Potion(java.lang.String)
+comment2.params=h
+comment2.target=void\ usePot(Hero)
+comment3.params=
+comment3.target=java.lang.String\ toString()
+numComments=4
